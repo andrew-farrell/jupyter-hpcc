@@ -12,7 +12,6 @@ from numpy import genfromtxt
 # For boost.python, you just need to know.
 
 
-
 # STOP EDITING
 #
 # Don't edit below this line unless you know what you're doing or are
@@ -20,6 +19,7 @@ from numpy import genfromtxt
 
 @ipym.magics_class
 class HPCCPythonMagics(ipym.Magics):
+
     @ipym.cell_magic
     def hpcc(self, line, cell=None):
         """Compile, execute C++ code, and return the standard output."""
@@ -32,37 +32,37 @@ class HPCCPythonMagics(ipym.Magics):
 
         # Define the source and executable filenames.
         source_filename = '{}.ecl'.format(name)
-		
-        # Write the code contained in the cell to the C++ file.
+
+        # Write the code contained in the cell to the ECL file.
         with open(source_filename, 'w') as f:
             f.write(cell)
 
         result = []
-		
-		
 
         # Compile the C++ code into an executable.
-        cmd = "eclplus {} {} {} {} {} {} {}".format(
+        cmd = "eclplus {} {} {} {} {} {} {} {}".format(
+		    'action=query',
             'user=hpccdemo',
             'password=hpccdemo',
             'server=http://192.168.23.129:8010',
             'cluster=thor',
-            'ecl=@'+source_filename,
+            'ecl=@' + source_filename,
             'format=csv',
-			'output='+'{}.csv'.format(name))
+            'output=' + '{}.csv'.format(name))
 
-        #if debug:
-           # result.append(cmd)
+        # if debug:
+        # result.append(cmd)
 
         compile = self.shell.getoutput(cmd)
-		result = genfromtxt('{}.csv'.format(name), delimiter=',')
+        result = genfromtxt('{}.csv'.format(name), delimiter=',')
         #output = self.shell.getoutput(program_filename)
-        #result.append(output)
+        # result.append(output)
 
-        #if any(result):
+        if any(result):
+		   return result
            # return ' -- '.join(map(str, filter(None, result)))
+		   
 
-   
 
 def load_ipython_extension(ipython):
     ipython.register_magics(HPCCPythonMagics)
