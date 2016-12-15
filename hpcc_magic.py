@@ -20,10 +20,21 @@ from numpy import genfromtxt
 @ipym.magics_class
 class HPCCPythonMagics(ipym.Magics):
 
+
+
     @ipym.cell_magic
     def hpcc(self, line, cell=None):
         """Compile, execute C++ code, and return the standard output."""
+        
+        from collections import defaultdict
 
+        import xmltodict
+ 
+        def convert(xml_file, xml_attribs=True):
+            with open(xml_file, "rb") as f:    # notice the "rb" mode
+                d = xmltodict.parse(f, xml_attribs=xml_attribs)
+                return d
+        
         args = line.split()
         name = args[0]
 
@@ -41,27 +52,32 @@ class HPCCPythonMagics(ipym.Magics):
 
         # Compile the C++ code into an executable.
         cmd = "eclplus {} {} {} {} {} {} {} {}".format(
-		    'action=query',
+            'action=query',
             'user=hpccdemo',
             'password=hpccdemo',
             'server=http://192.168.23.129:8010',
             'cluster=thor',
             'ecl=@' + source_filename,
-            'format=csv',
-            'output=' + '{}.csv'.format(name))
+            'format=xml',
+            'output=' + '{}.xml'.format(name))
 
         # if debug:
         # result.append(cmd)
 
         compile = self.shell.getoutput(cmd)
-        result = genfromtxt('{}.csv'.format(name), delimiter=',')
+        #result = genfromtxt('{}.csv'.format(name), delimiter=',')
         #output = self.shell.getoutput(program_filename)
         # result.append(output)
+        # from xml.etree.ElementTree import ElementTree
+        # tree = ElementTree()
+        # test = tree.parse('{}.xml'.format(name))
+        #root = tree.getroot()
+        return convert('{}.xml'.format(name))
 
-        if any(result):
-		   return result
+        #if any(result):
+     #return result
            # return ' -- '.join(map(str, filter(None, result)))
-		   
+     
 
 
 def load_ipython_extension(ipython):
