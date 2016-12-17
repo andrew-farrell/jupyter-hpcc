@@ -85,13 +85,24 @@ class HpccMagic(Magics, Configurable):
         user_ns = self.shell.user_ns.copy()
         user_ns.update(local_ns)
         
-        args = line.split()
+        def replace_local(input):
+            result = input
+            #tokens = re.findall(r"%(\w+)%",input)
+            #return re.sub(r"[%]\s*[^%]+\s*[%]",lambda k:self.shell.user_ns.get(k[1,-1].strip(),k),input)
+            for v in re.findall(r"%(\w+)%",input):
+                result = re.sub(r'%\s?' + v + '\s?%', str(self.shell.user_ns[str(v)]), result)
+                # local_var = str(self.shell.user_ns[str(v)])
+                # result = local_var
+                # #result = re.sub(r'\b'+str(v)+'\b', local_var, result)
+            return result
+            
+        p_line = replace_local(line)
+            
+        parsed_args = {}
+        parsed_args = dict(re.findall(r'(\S+)=(".*?"|\S+)', p_line))
+        args = p_line.split()
         name = args[0]
         
-        def convert(xml_file, xml_attribs=True):
-            with open(xml_file, "rb") as f:    # notice the "rb" mode
-                d = xmltodict.parse(f, xml_attribs=xml_attribs)
-                return d
 
         # args = args[1:]
         # debug = 'debug' in args
@@ -104,24 +115,28 @@ class HpccMagic(Magics, Configurable):
         # first_word = parsed['hpcc'].split(None, 1)[:1]
         # if first_word and first_word[0].lower() == 'persist':
             # return self._persist_dataframe(parsed['hpcc'], conn, user_ns)
+            
+
+            
 
         try:
+            p_cell = replace_local(cell)
             # Write the code contained in the cell to the ECL file.
             with open(source_filename, 'w') as f:
-                f.write(cell)
+                f.write(p_cell)
 
             result = []
 
             # Compile the C++ code into an executable.
             cmd = "eclplus {} {} {} {} {} {} {} {}".format(
                 'action=query',
-                'user=hpccdemo',
-                'password=hpccdemo',
-                'server=http://192.168.23.129:8010',
-                'cluster=thor',
+                'user='+parsed_args['user'],
+                'password='+parsed_args['password'],
+                'server='+parsed_args['server'],
+                'cluster='+parsed_args['cluster'],
                 'ecl=@' + source_filename,
                 'format=xml',
-                'output=' + '{}.xml'.format(name))
+                'output=' + '{}.xml'.format(source_filename))
 
             # if debug:
             # result.append(cmd)
@@ -134,11 +149,11 @@ class HpccMagic(Magics, Configurable):
             # tree = ElementTree()
             # test = tree.parse('{}.xml'.format(name))
             #root = tree.getroot()
-            f = open('{}.xml'.format(name), "r") #convert('{}.xml'.format(name))
+            f = open('{}.xml'.format(source_filename), "r") #convert('{}.xml'.format(name))
             result = f.read()
             f.close()
             
-            return result
+            return result #self.shell.user_ns[re.findall(r"%(\w+)%",p_line)[0]]
             
             # result = sql.run.run(conn, parsed['hpcc'], self, user_ns)
 
