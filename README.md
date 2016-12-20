@@ -12,7 +12,7 @@ Local python variables can be bound to placeholders in ECL
 Allows polygot development of solutions using ECL along with python and any other embedded languages in one Jupyter notebook.
 e.g. Transform your data at scale with HPCC using ECL then visualise the results using Python and matplotlib
 
-## How to raise issues:
+## How to raise issues or feature requests:
 * https://github.com/andrew-farrell/jupyter-hpcc/issues
 
 ## Prerequsites:
