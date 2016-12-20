@@ -13,7 +13,7 @@ Allows polygot development of solutions using ECL along with python and any othe
 e.g. Transform your data at scale with HPCC using ECL then visualise the results using Python and matplotlib
 
 ## Get started
-* download hpcc_magic.put to your jupyter folder
+* download hpcc_magic.py and put it in your jupyter notebook project folder
 
 ## How to raise issues or feature requests:
 * https://github.com/andrew-farrell/jupyter-hpcc/issues
