@@ -23,7 +23,7 @@ e.g. Transform your data at scale with HPCC using ECL then visualise the results
 * HPCC virtual machine (https://hpccsystems.com/download/virtual-machine-image) or have HPCC installed already
 
 ## Examples:
-*  https://github.com/andrew-farrell/jupyter-hpcc/jupyter-hpcc-first-notebook.ipynb
+* https://github.com/andrew-farrell/jupyter-hpcc/blob/master/jupyter-hpcc-first-notebook.ipynb
 
 ## TODO:
 * integrate with hpcc visualisation library
